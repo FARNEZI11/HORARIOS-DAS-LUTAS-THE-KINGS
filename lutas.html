@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infográfico: Noite de Lutas (Atualizado)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 18px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #FF4E50;
+            border: 4px solid #1f2937;
+        }
+        .timeline-path {
+            position: absolute;
+            left: -22px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #374151;
+        }
+        @media print {
+            .page-break-after {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+    
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <div class="mb-4">
+                <img src="C:\Users\Vitoria.Farnezi\Downloads\download (4).png" alt="Logo do Evento" class="w-32 h-32 mx-auto rounded-full object-cover">
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black uppercase" style="color: #FF4E50;">Noite de Lutas</h1>
+            <p class="text-lg md:text-xl text-gray-400 mt-2">A análise completa do cronograma atualizado do evento</p>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 text-center">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border-t-4 border-yellow-400">
+                <p class="text-gray-400 text-lg">Total de Lutas</p>
+                <p class="text-6xl font-bold text-white">26</p>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border-t-4 border-blue-500">
+                <p class="text-gray-400 text-lg">Total de Atletas</p>
+                <p class="text-6xl font-bold text-white">52</p>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border-t-4 border-red-500">
+                <p class="text-gray-400 text-lg">Horas de Evento</p>
+                <p class="text-6xl font-bold text-white">~7</p>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+                <h2 class="text-2xl font-bold text-center mb-4">Lutas por Modalidade</h2>
+                <p class="text-center text-gray-400 mb-6">O evento apresenta uma variedade de modalidades, com o Muay Thai/Kickboxing sendo predominante, seguido pelo Boxe e MMA. Esta distribuição mostra o foco do evento em lutas em pé.</p>
+                <div class="chart-container">
+                    <canvas id="modalityChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+                <h2 class="text-2xl font-bold text-center mb-4">Lutas por Categoria de Peso</h2>
+                 <p class="text-center text-gray-400 mb-6">As categorias de peso mais leves, especialmente 56kg, 61kg e 70kg, concentram a maior parte das disputas da noite, indicando um card com atletas ágeis e técnicos.</p>
+                <div class="chart-container">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12">Linha do Tempo do Evento</h2>
+             <p class="text-center text-gray-400 max-w-3xl mx-auto mb-10">Acompanhe cada momento do evento, desde a primeira luta do card preliminar até a disputa principal da noite. A linha do tempo abaixo detalha cada confronto, mostrando o fluxo contínuo de ação.</p>
+            <div id="timeline" class="relative max-w-3xl mx-auto pl-8">
+                <div class="timeline-path"></div>
+            </div>
+        </section>
+
+        <section class="bg-gray-800 p-6 rounded-lg shadow-xl">
+            <h2 class="text-2xl font-bold text-center mb-4">Representação das Equipes</h2>
+            <p class="text-center text-gray-400 mb-6">A Team Pracinha e a Randlemans se destacam como as equipes com mais atletas representando-as no evento, demonstrando sua forte presença na cena local de artes marciais.</p>
+            <div class="chart-container h-96 max-h-[600px]">
+                <canvas id="teamsChart"></canvas>
+            </div>
+        </section>
+
+        <footer class="text-center mt-16 text-gray-500">
+            <p>Análise visual gerada com base no cronograma oficial do evento.</p>
+            <button id="downloadBtn" class="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out">
+                Baixar Infográfico como Imagem
+            </button>
+        </footer>
+
+    </div>
+
+    <script>
+        const fightData = [
+            { num: 1, time: '14:30', cat: '56kg BOXE', a1: 'CASSIANO PAJUABA', t1: 'Daniel Penhalver', a2: 'LUIS OTAVIO', t2: 'Thaylor Vitor' },
+            { num: 2, time: '14:45', cat: '70kg', a1: 'FELIPE MELO', t1: 'Team ISRAEL', a2: 'GABRIEL CARDOSO', t2: 'Scorpions team' },
+            { num: 3, time: '15:00', cat: '61kg', a1: 'GEOVANE CASSIANO', t1: 'Aligator fight', a2: 'RYAN ALVES', t2: 'TEAM PRACINHA' },
+            { num: 4, time: '15:15', cat: '66kg', a1: 'JOAO LUCAS', t1: 'Scopion team', a2: 'YAN D\'LUCA', t2: 'Koala muaythai' },
+            { num: 5, time: '15:30', cat: '77kg', a1: 'PEDRINHO MATADOR', t1: 'Randlemans Combat', a2: 'YGOR SHARLLYS', t2: 'TEM PENHALVER' },
+            { num: 6, time: '15:45', cat: '56KG', a1: 'JOAO HENRIQUE', t1: 'Team carlos Sena', a2: 'LUIS FELIPE', t2: 'Team Pracinha' },
+            { num: 7, time: '16:00', cat: '56KG', a1: 'VITORIA FARNEZI', t1: 'Team israel', a2: 'MARIA CONCEIÇÃO', t2: 'Luna muaythai' }, 
+            { num: 8, time: '16:15', cat: '61kg', a1: 'JOAO ATIRADOR', t1: 'Koala Muaythai', a2: 'HIGOR CUSTODIO', t2: 'ALIGATORS FighT' },
+            { num: 9, time: '16:30', cat: '65kG BOXE', a1: 'LUCAS LUCA', t1: 'Fighters clube', a2: 'ALEXANDRE UPPER', t2: 'UPPER FIGHT' },
+            { num: 10, time: '16:45', cat: '70kg', a1: 'LUCAS SOUZA', t1: 'Team Gilberto Castro', a2: 'GUILHERME TOALINHA', t2: 'Daniel Penhalver' },
+            { num: 11, time: '17:00', cat: '70kg', a1: 'JEFFERSON JUNIO', t1: 'Upper fight', a2: 'GUSTAVO LOBO', t2: 'Aligator fight' },
+            { num: 12, time: '17:15', cat: '75kg', a1: 'GUILHERME BARBOSA', t1: 'Team Rodrigues', a2: 'MATEUS FREITAS', t2: 'Team pracinha' },
+            { num: 13, time: '17:30', cat: '77KG BOXE', a1: 'FELIPE CALACIO', t1: 'Upper fight', a2: 'KENNED DUART', t2: 'Team LH' },
+            { num: 14, time: '17:45', cat: '56KG', a1: 'IGOR DERGRAUD', t1: 'Randlemans Combat', a2: 'ROBSON PEREIRA', t2: 'Team pracinha' },
+            { num: 15, time: '18:00', cat: '70kg', a1: 'RIQUE DE MATOS', t1: 'Aligators fight', a2: 'RAFAEL PACHECO', t2: 'Koala muaythai' },
+            { type: 'break', text: 'INTERVALO' },
+            { type: 'header', text: 'CARD PRINCIPAL' },
+            { num: 17, time: '18:45', cat: 'BOXE 65kg', a1: 'CAUA MARQUES', t1: 'LFT', a2: 'GLEDSON NESCAU', t2: 'Team Thaylor' }, 
+            { num: 18, time: '19:00', cat: '61KG BOXE', a1: 'WALTER MATHEUS', t1: 'Ilton fightes', a2: 'MARCOS SILVA', t2: 'Team marcos silva' },
+            { num: 19, time: '19:15', cat: '85kg MMA', a1: 'GUSTAVO LOBAO', t1: 'Randlemans Combat', a2: 'VINICIUS BARBOSA', t2: 'Sangre del gerrero' },
+            { num: 20, time: '19:30', cat: '56KG', a1: 'JOAO ZUUKAH', t1: 'Team breno diniz', a2: 'EVERTON CEARA', t2: 'Team Penhalver' },
+            { num: 21, time: '19:45', cat: '70kg', a1: 'GABRIEL TINKER BELL', t1: 'Randlemans', a2: 'DANILO TAMAGUCHI', t2: 'Team pracinha' },
+            { num: 22, time: '20:00', cat: '61kg', a1: 'PEDRO PEPPO', t1: 'Team breno diniz', a2: 'GUILHERME MARQUES', t2: 'aligator figth' },
+            { num: 23, time: '20:15', cat: '61KG BOXE', a1: 'FELIPE FAQUIM', t1: 'Upper fight', a2: 'YURI NATANAEL', t2: 'LFT' },
+            { num: 24, time: '20:30', cat: '80kg', a1: 'JOÃO PAULO', t1: 'ILTON FIGHTERS', a2: 'THAI PANDA', t2: 'Team pracinha' },
+            { num: 25, time: '20:45', cat: '61KG CINTURAO MMA', a1: 'JOSE GABRIEL', t1: 'Randlemans', a2: 'PEDRO LIGEIRINHO', t2: 'LFT' },
+            { num: 26, time: '21:00', cat: '70KG MUAYTHAI PRÓ', a1: 'TYSON D\'ANGELES', t1: 'Luna muaythai', a2: 'DOUGLAS SANTOS', t2: 'Team israel' },
+        ];
+        
+        const palette = {
+            red: '#FF4E50',
+            yellow: '#F9D423',
+            blue: '#00AEEF',
+            lightBlue: '#38bdf8',
+            purple: '#8b5cf6',
+            green: '#22c55e',
+            orange: '#f97316'
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const wrapLabel = (label, maxLength = 16) => {
+            if (label.length <= maxLength) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            }
+            if (currentLine) lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const validFights = fightData.filter(f => f.num);
+        
+        const modalityData = validFights.reduce((acc, fight) => {
+            let modality = 'Muay Thai / Kickboxing';
+            if (fight.cat.toLowerCase().includes('boxe')) modality = 'Boxe';
+            if (fight.cat.toLowerCase().includes('mma')) modality = 'MMA';
+            acc[modality] = (acc[modality] || 0) + 1;
+            return acc;
+        }, {});
+        new Chart(document.getElementById('modalityChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(modalityData),
+                datasets: [{
+                    data: Object.values(modalityData),
+                    backgroundColor: [palette.red, palette.blue, palette.yellow],
+                    borderColor: '#1f2937',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#e5e7eb', font: { size: 14 } }
+                    },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                }
+            }
+        });
+
+        const weightData = validFights.reduce((acc, fight) => {
+            const weightMatch = fight.cat.match(/(\d+)kg/i);
+            if (weightMatch) {
+                const weight = `${weightMatch[1]}kg`;
+                acc[weight] = (acc[weight] || 0) + 1;
+            }
+            return acc;
+        }, {});
+        const sortedWeights = Object.entries(weightData).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+        new Chart(document.getElementById('weightChart'), {
+            type: 'bar',
+            data: {
+                labels: sortedWeights.map(w => w[0]),
+                datasets: [{
+                    label: 'Número de Lutas',
+                    data: sortedWeights.map(w => w[1]),
+                    backgroundColor: palette.blue,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#374151' },
+                        ticks: { color: '#e5e7eb', stepSize: 1, font: { size: 14 } } 
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#e5e7eb', font: { size: 14 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                }
+            }
+        });
+        
+        const normalizeTeamName = (name) => {
+            if (!name || typeof name !== 'string') return null;
+            return name.trim()
+                       .toLowerCase()
+                       .replace(/team /g, '')
+                       .replace(/tem /g, '')
+                       .replace(/figth$/i, 'fight')
+                       .replace(/fighters$/i, 'fightes')
+                       .replace(/combat$/i, '')
+                       .replace(/ /g, '')
+                       .replace('pracinha', 'teampracinha')
+                       .replace('israel', 'teamisrael')
+                       .replace('penhalver', 'teampenhalver');
+        };
+
+        const teamDisplayName = {
+            'aligatorfight': 'Aligator Fight',
+            'teampracinha': 'Team Pracinha',
+            'randlemans': 'Randlemans',
+            'upperfight': 'Upper Fight',
+            'koalamuaythai': 'Koala Muaythai',
+            'lft': 'LFT',
+            'teampenhalver': 'Team Penhalver',
+            'teamisrael': 'Team Israel',
+            'lunamuythai': 'Luna Muaythai',
+            'teambrenodiniz': 'Team Breno Diniz',
+            'danielpenhalver': 'Daniel Penhalver',
+            'thaylorvitor': 'Thaylor Vitor',
+            'scorpionsteam': 'Scorpions Team',
+            'teamcarlossena': 'Team Carlos Sena',
+            'teamthaylor': 'Team Thaylor',
+            'fightersclube': 'Fighters Clube',
+            'teamgilbertocastro': 'Team Gilberto Castro',
+            'teamrodrigues': 'Team Rodrigues',
+            'teamlh': 'Team LH',
+            'iltonfightes': 'Ilton Fightes',
+            'teammarcosilva': 'Team Marcos Silva',
+            'sangredelgerrero': 'Sangre del Gerrero',
+        };
+
+        const teamsData = validFights.reduce((acc, fight) => {
+            [fight.t1, fight.t2].forEach(teamName => {
+                const normalized = normalizeTeamName(teamName);
+                const displayName = teamDisplayName[normalized] || teamName;
+                if (displayName) {
+                    acc[displayName] = (acc[displayName] || 0) + 1;
+                }
+            });
+            return acc;
+        }, {});
+        
+        const sortedTeams = Object.entries(teamsData).sort((a, b) => b[1] - a[1]);
+        new Chart(document.getElementById('teamsChart'), {
+            type: 'bar',
+            data: {
+                labels: sortedTeams.map(t => wrapLabel(t[0])),
+                datasets: [{
+                    label: 'Número de Atletas',
+                    data: sortedTeams.map(t => t[1]),
+                    backgroundColor: [palette.red, palette.blue, palette.yellow, palette.lightBlue, palette.purple, palette.green, palette.orange],
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                     y: { 
+                        grid: { display: false },
+                        ticks: { color: '#e5e7eb', font: { size: 12 } } 
+                    },
+                    x: {
+                        grid: { color: '#374151' },
+                        ticks: { color: '#e5e7eb', stepSize: 1, font: { size: 14 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                }
+            }
+        });
+
+        const timelineContainer = document.getElementById('timeline');
+        let fightCount = 0;
+        fightData.forEach(item => {
+            let element = '';
+            let pageBreakClass = '';
+
+            if (item.num) {
+                fightCount++;
+                if (fightCount % 3 === 0) {
+                    pageBreakClass = 'page-break-after';
+                }
+            }
+
+            if (item.type === 'break') {
+                element = `
+                    <div class="relative py-8 timeline-item ${pageBreakClass}">
+                        <div class="bg-gray-700 p-4 rounded-lg shadow-lg text-center">
+                            <p class="font-bold text-yellow-400">${item.text}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (item.type === 'header') {
+                element = `
+                    <div class="relative py-4 ${pageBreakClass}">
+                        <h3 class="text-2xl font-black text-center text-red-500 uppercase tracking-wider">${item.text}</h3>
+                    </div>
+                `;
+            } else {
+                 element = `
+                    <div class="mb-8 relative timeline-item ${pageBreakClass}">
+                        <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-lg" style="color: ${palette.red};">LUTA ${String(item.num).padStart(2, '0')}</span>
+                                <span class="bg-gray-700 text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded">${item.time}</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-4">${item.cat.toUpperCase()}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-center">
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-lg" style="color: ${palette.red};">${item.a1}</span>
+                                    <span class="text-xs text-gray-400">${item.t1}</span>
+                                </div>
+                                <div class="flex items-center justify-center font-bold text-red-500 text-xl order-first md:order-none row-span-2">VS</div>
+                                 <div class="flex flex-col">
+                                    <span class="font-bold text-lg" style="color: ${palette.blue};">${item.a2}</span>
+                                    <span class="text-xs text-gray-400">${item.t2}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 `;
+            }
+            timelineContainer.innerHTML += element;
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            html2canvas(document.body, {
+                scale: 4, 
+                useCORS: true,
+                backgroundColor: '#111827'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'infografico-noite-de-lutas.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
